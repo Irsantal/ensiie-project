@@ -31,6 +31,40 @@ app.use(session({
   saveUninitialized: true,
 }));
 
+// partie gestion utilisateur
+class Utilisateur {
+  constructor(id, mdp, statut) {
+    this.id = id;
+    this.mdp = mdp;
+    this.statut = statut;
+  }
+  get infos () {
+    return {
+      id: this.id,
+      mdp: this.mdp,
+      statut: this.statut,
+    }
+  }
+}
+
+let getUtilisateursParStatut = function (statut) {
+  let utilisateurs = [];
+  let sqlReq = 'SELECT * FROM utilisateur WHERE statut=' + statut;
+  client.query(sqlReq, (err, resp) => {
+    if (err) {
+      console.log(err.stack);
+    }
+    else {
+      resp.rows.forEach(function (row) {
+        utilisateurs.push(new Utilisateur(row[identifiant], row[mdp], row[statut]));
+      });
+    }
+  })
+  return utilisateurs;
+};
+
+// fin partie utilisateur
+
 app.get('/', (req, res) => {
   if(!req.session.user || !req.session.password)
     res.redirect("/login")
