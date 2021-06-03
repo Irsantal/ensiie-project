@@ -1,3 +1,4 @@
+const { compare } = require('semver');
 const { client } = require('./../db');
 
 module.exports.ingredientHandler = (req, res) => {
@@ -34,47 +35,57 @@ module.exports.postIngredientHandler = (req, res) => {
 
       var quantity = req.body.quantity;
 
-      if(result.length === 1){
-        var sqlExistsStocker = "SELECT * FROM Stocker WHERE id_ingredient = (SELECT id FROM Ingredient WHERE nom = $1) AND identifiant_utilisateur = $2";
-        value = [ingredient, req.session.user];
+      if(result.length === 1){ // si l'ingrédient est déjà dans la table Ingredient
+        ajout_frigo(ingredient, req.session.user, quantity);
+      }
 
-        client.query(sqlExistsStocker, value, (err, respStock) => {
-          var resultStock = err ? err.stack : respStock.rows;
-          console.log(resultStock);
-          console.log(resultStock.length);
+      else{ // si l'ingrédient n'existe pas dans la table Ingrédient
+        // ajout dans la table Ingrédient
+        var unit = req.body.unite;
+        var sqlReq = "INSERT INTO Ingredient(nom, unite) VALUES($1, $2)";
+        var value = [ingredient, unit];
 
-          if(resultStock.length === 0){ // si l'ingrédient n'existe pas encore dans le frigo
-            console.log("1");
-            var sqlReq = "INSERT INTO Stocker(identifiant_utilisateur, id_ingredient, quantite) VALUES($1, (SELECT id FROM Ingredient WHERE nom = $2), $3)";
-            var values = [req.session.user, ingredient, quantity];
-    
-            client.query(sqlReq, values, (err, resp) => {
-              const result = err ? err.stack : resp.rows[0];
-              
-              if(err){
-                throw err;
-              }
-            });
-          }
-    
-          else{ // si l'ingrédient existe déjà dans le frigo
-            console.log("2");
-            var sqlReq = "UPDATE Stocker SET quantite = (SELECT quantite FROM Stocker WHERE identifiant_utilisateur = $1 AND id_ingredient = (SELECT id FROM Ingredient WHERE nom = $3)) + $2 WHERE identifiant_utilisateur = $1 AND id_ingredient = (SELECT id FROM Ingredient WHERE nom = $3)";
-            
-            var values = [req.session.user, quantity, ingredient];
-    
-            client.query(sqlReq, values, (err, resp) => {
-              const result = err ? err.stack : resp.rows[0];
-              
-              if(err){
-                throw err;
-              }
-            });
-          }
+        client.query(sqlReq, value, (err, resp) => {
+          // ajout dans la table Stocker
+          // ajout_frigo(ingredient, req.session.user, quantity);
+          var sqlReq = "INSERT INTO Stocker(identifiant_utilisateur, id_ingredient, quantite) VALUES($1, (SELECT id FROM Ingredient WHERE nom = $2), $3, (SELECT DATE(NOW())))";
+          var values = [req.session.user, ingredient, quantity];
+
+          client.query(sqlReq, values, (errStocker, respStocker) => {
+            const result = errStocker ? errStocker.stack : respStocker.rows[0];
+          });
         });
       }
 
       res.redirect('/ingredient');
     });
   }
+}
+
+function ajout_frigo(ingredient, user, quantity){
+  var sqlExistsStocker = "SELECT * FROM Stocker WHERE id_ingredient = (SELECT id FROM Ingredient WHERE nom = $1) AND identifiant_utilisateur = $2";
+  value = [ingredient, user];
+
+  client.query(sqlExistsStocker, value, (err, respStock) => {
+    var resultStock = err ? err.stack : respStock.rows;
+
+    if(resultStock.length === 0){ // si l'ingrédient n'existe pas encore dans le frigo
+      var sqlReq = "INSERT INTO Stocker(identifiant_utilisateur, id_ingredient, quantite, date_stock) VALUES($1, (SELECT id FROM Ingredient WHERE nom = $2), $3, (SELECT DATE(NOW())))";
+      var values = [user, ingredient, quantity];
+
+      client.query(sqlReq, values, (err, resp) => {
+        const result = err ? err.stack : resp.rows[0];
+      });
+    }
+
+    else{ // si l'ingrédient existe déjà dans le frigo
+      var sqlReq = "UPDATE Stocker SET quantite = (SELECT quantite FROM Stocker WHERE identifiant_utilisateur = $1 AND id_ingredient = (SELECT id FROM Ingredient WHERE nom = $3)) + $2 WHERE identifiant_utilisateur = $1 AND id_ingredient = (SELECT id FROM Ingredient WHERE nom = $3)";
+      
+      var values = [user, quantity, ingredient];
+
+      client.query(sqlReq, values, (err, resp) => {
+        const result = err ? err.stack : resp.rows[0];
+      });
+    }
+  });
 }
