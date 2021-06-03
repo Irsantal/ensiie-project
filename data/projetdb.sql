@@ -1,5 +1,5 @@
 ------------------------------------------------------------
---        Script Postgre 
+--        Script Postgre
 ------------------------------------------------------------
 
 
@@ -42,7 +42,7 @@ CREATE TABLE public.Stocker(
 	date_stock         DATE   ,
 	CONSTRAINT Stocker_PK PRIMARY KEY (identifiant_Utilisateur,id_ingredient)
 
-	,CONSTRAINT Stocker_User_FK FOREIGN KEY (identifiant_utilisateur) REFERENCES public.Utilisateur(identifiant)
+	,CONSTRAINT Stocker_User_FK FOREIGN KEY (identifiant_utilisateur) REFERENCES public.Utilisateur(identifiant) ON DELETE CASCADE
 	,CONSTRAINT Stocker_Ingredient0_FK FOREIGN KEY (id_ingredient) REFERENCES public.Ingredient(id)
 )WITHOUT OIDS;
 
