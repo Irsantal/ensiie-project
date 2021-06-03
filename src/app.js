@@ -30,108 +30,6 @@ app.use(session({
   saveUninitialized: true,
 }));
 
-// partie gestion utilisateur
-class Utilisateur {
-  constructor(id, mdp, statut) {
-    this.id = id;
-    this.mdp = mdp;
-    this.statut = statut;
-  }
-  get infos () {
-    return {
-      id: this.id,
-      mdp: this.mdp,
-      statut: this.statut,
-    }
-  }
-}
-
-let getUtilisateursParStatut = function (statut) {
-  let utilisateurs = [];
-  let sqlReq = 'SELECT * FROM utilisateur WHERE statut=' + statut;
-  client.query(sqlReq, (err, resp) => {
-    if (err) {
-      console.log(err.stack);
-    }
-    else {
-      resp.rows.forEach(function (row) {
-        utilisateurs.push(new Utilisateur(row[identifiant], row[mdp], row[statut]));
-      });
-    }
-  })
-  return utilisateurs;
-};
-
-// fin partie utilisateur
-
-// partie gestion utilisateur
-class Utilisateur {
-  constructor(id, mdp, statut) {
-    this.id = id;
-    this.mdp = mdp;
-    this.statut = statut;
-  }
-  get infos () {
-    return {
-      id: this.id,
-      mdp: this.mdp,
-      statut: this.statut,
-    }
-  }
-}
-
-let getUtilisateursParStatut = function (statut) {
-  let utilisateurs = [];
-  let sqlReq = 'SELECT * FROM utilisateur WHERE statut=' + statut;
-  client.query(sqlReq, (err, resp) => {
-    if (err) {
-      console.log(err.stack);
-    }
-    else {
-      resp.rows.forEach(function (row) {
-        utilisateurs.push(new Utilisateur(row[identifiant], row[mdp], row[statut]));
-      });
-    }
-  })
-  return utilisateurs;
-};
-
-// fin partie utilisateur
-
-// partie gestion utilisateur
-class Utilisateur {
-  constructor(id, mdp, statut) {
-    this.id = id;
-    this.mdp = mdp;
-    this.statut = statut;
-  }
-  get infos () {
-    return {
-      id: this.id,
-      mdp: this.mdp,
-      statut: this.statut,
-    }
-  }
-}
-
-let getUtilisateursParStatut = function (statut) {
-  let utilisateurs = [];
-  let sqlReq = 'SELECT * FROM utilisateur WHERE statut=' + statut;
-  client.query(sqlReq, (err, resp) => {
-    if (err) {
-      console.log(err.stack);
-    }
-    else {
-      resp.rows.forEach(function (row) {
-        utilisateurs.push(new Utilisateur(row[identifiant], row[mdp], row[statut]));
-      });
-    }
-  })
-  return utilisateurs;
-};
-
-// fin partie utilisateur
-
 app.get('/', (req, res) => {
   res.render("home/home_index.html.twig", {});
 });
@@ -167,6 +65,15 @@ app.get('/recettes', (req, res) => {
     var result = err ? err.stack : resp.rows;
     res.render('recipe/recipe_index.html.twig', {data:result});
   })
+});
+
+app.get('/admin', (req, res) => {
+  let sqlReq = 'SELECT * FROM utilisateur ORDER BY identifiant ASC';
+  client.query(sqlReq, (err, resp) => {
+    var result = err ? err.stack : resp.rows;
+
+    res.render('admin/admin.html.twig', {utilisateurs: resp});
+  });
 });
 
 // Handle 404 - Keep this as a last route
