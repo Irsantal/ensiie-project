@@ -26,7 +26,7 @@ Below are some useful commands :
 * `make phpunit.run` Run the PHPUnit tests
 * `make install` Reinstall all containers
 
-##Launch project
+## Launch project
 To make this projet work:
 * Create another `.env` file in `src` directory, with user, password and db port (usually 5431)
 * At root project, `make install` and `make start` will set up database
