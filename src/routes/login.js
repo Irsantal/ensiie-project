@@ -3,11 +3,7 @@ const passwordHash = require('password-hash');
 
 
 module.exports.loginHandler = (req, res) => {
-  var sqlReq = "SELECT * FROM User;"
-  client.query(sqlReq, (err, resp) => {
-    const result = err ? err.stack : resp.rows[0];
-    res.render("connection/connection_login.html.twig", {});
-  });
+  res.render("connection/connection_login.html.twig", {});
 }
 module.exports.postLoginHandler = (req, res) => {
   let errorMsg = "";
