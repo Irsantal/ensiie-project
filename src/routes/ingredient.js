@@ -8,14 +8,18 @@ module.exports.ingredientHandler = (req, res) => {
     var userId = req.session.user;
     var sqlReq = "SELECT DISTINCT Ingredient.nom, Ingredient.unite, Stocker.quantite FROM Ingredient, Stocker WHERE Ingredient.id IN (SELECT id_ingredient FROM Stocker WHERE identifiant_utilisateur=$1) AND Stocker.quantite = (SELECT DISTINCT quantite from Stocker where id_ingredient = Ingredient.id AND identifiant_utilisateur=$1);"
     var sqlReqUnites = "SELECT DISTINCT unite FROM Ingredient;"
+    var sqlIngredients = "SELECT nom FROM Ingredient;"
 
     var sqlIngParam = [req.session.user];
     client.query(sqlReq, sqlIngParam, (err, resp) => {
       client.query(sqlReqUnites, (erru, respu) => {
-        var result = err ? err.stack : resp.rows;
-        var resultU = erru ? erru.stack : respu.rows;
+        client.query(sqlIngredients, (erri, respi) => {  
+          var result = err ? err.stack : resp.rows;
+          var resultU = erru ? erru.stack : respu.rows;
+          var resultI = erri ? erri.stack : respi.rows;
 
-        res.render('ingredient/ingredient_index.html.twig', {login:req.session.user, data:result, unites:resultU});
+          res.render('ingredient/ingredient_index.html.twig', {login:req.session.user, data:result, unites:resultU, ingredients:JSON.stringify(resultI)});
+        });
       });
     });
   }
@@ -70,12 +74,13 @@ module.exports.postIngredientHandler = (req, res) => {
         var value = [ingredient, unit];
 
         client.query(sqlReq, value, (err, resp) => {
+          const result = err ? err.stack : resp.rows[0];
           // ajout dans la table Stocker
-          var sqlReq = "INSERT INTO Stocker(identifiant_utilisateur, id_ingredient, quantite) VALUES($1, (SELECT id FROM Ingredient WHERE nom = $2), $3, (SELECT DATE(NOW())))";
+          var sqlReq = "INSERT INTO Stocker(identifiant_utilisateur, id_ingredient, quantite, date_stock) VALUES($1, (SELECT id FROM Ingredient WHERE nom = $2), $3, (SELECT DATE(NOW())))";
           var values = [req.session.user, ingredient, quantity];
 
-          client.query(sqlReq, values, (errStocker, respStocker) => {
-            const result = errStocker ? errStocker.stack : respStocker.rows[0];
+          client.query(sqlReq, values, (err, resp) => {
+            const result = err ? err.stack : resp.rows[0];
           });
         });
       }

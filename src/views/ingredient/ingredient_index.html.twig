@@ -4,38 +4,73 @@
 
 {% block stylesheets %}
     {{ parent() }}
+    
+    <style>
+    #ingredientNameGroup {
+        position: relative;
+        margin-bottom: 30px;
+    }
 
+    .autocomplete {
+        display: inline-block;
+    }
+
+    input[type=text] {
+        width: 100%;
+    }
+
+    input[type=submit] {
+        cursor: pointer;
+    }
+
+    .autocomplete-items div {
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    .autocomplete-items div:hover {
+        background-color: #e9e9e9; 
+    }
+    </style>
 {% endblock %}
 
 
 {% block body %}
     <div class="ingredientsview">
-    <h3>Liste des ingredients</h3>
-    <table class="table">
-    <tr>
-    <th>Nom</th>  <th>Quantité</th>
-    </tr>
-    {% for d in data %}
-      <tr>
-      <td>{{d.nom}}</td><td>{{d.quantite}} {% if d.unite != 'u    ' %} {{d.unite}} {% endif %}</td>
-      </tr>
-      {% endfor %}
-    </table>
+        <h3>Liste des ingredients</h3>
+        <table class="table">
+            <tr>
+                <th>Nom</th>  <th>Quantité</th>
+            </tr>
+            {% for d in data %}
+            <tr>
+                <td>{{d.nom}}</td>
+                <td>{{d.quantite}} {% if d.unite != 'u    ' %} {{d.unite}} {% endif %}</td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
 
     <div class="ingredientsform">
         <h3>Ajouter un ingredient</h3>
-        <form class="addingredientform" action="/ingredient" method="post">
-            <label for="name">Nom de l'ingrédient</label>
-            <input type="text" name="name">
 
-            <label for="name">Quantité</label>
-            <input type="number" name="quantity" min="0">
-            <select class="unite" name="unite">
-                {% for u in unites %}
-                    <option value="{{u.unite}}">{{u.unite}}</li>
-                {% endfor %}
-            </select>
+        <!--Make sure the form has the autocomplete function switched off:-->
+        <form autocomplete="off" action="/ingredient" method="post" class="addingredientform">
+            <div class="autocomplete">
+                <label for="name">Nom de l'ingrédient</label>
+                
+                <div id = "ingredientNameGroup">
+                    <input type = "text" name = "name" id = "ingredientNameInput" data-id = {{ingredients}}>
+                </div>
+
+                <label for="name">Quantité</label>
+                <input type="number" name="quantity" min="0">
+                <select class="unite" name="unite">
+                    {% for u in unites %}
+                        <option value="{{u.unite}}">{{u.unite}}</li>
+                    {% endfor %}
+                </select>
+            </div>
             <input type = "submit" value = "Ajouter l'ingrédient">
         </form>
     </div>
@@ -43,4 +78,123 @@
 
 {% block javascripts %}
     {{ parent() }}
+    
+    <script>    
+    /*
+    * La fonction permet d'autocompléter en fonction de ce que l'utilisateur écrit dans un champ.
+    * @param le champ à autocompléter
+    * @param la liste des valeurs possibles
+    */
+    function autocomplete(group, list) {
+
+        const inp = group.childNodes[1];
+
+        var currentFocus;
+        
+        // quand l'utilisateur écrit dans la zone de saisie
+        inp.addEventListener("input", function (e) {
+            var a, b, i, val = this.value;
+            
+            closeAllLists();
+            
+            if (!val) { // si l'utilisateur n'a rien écrit
+                return false; 
+            }
+
+            currentFocus = -1;
+            
+            // div qui contient le nom de chaque élément
+            a = document.createElement("DIV");
+            a.setAttribute("id", this.id + "autocomplete-list");
+            a.setAttribute("class", "autocomplete-items");
+            
+            group.appendChild(a);
+            
+            for (i = 0 ; i < list.length ; i++) {
+                if (list[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) { // si la valeur saisie correspond à un élément de la liste
+                    // div pour les éléments correspondants
+                    b = document.createElement("DIV");
+
+                    // les lettres en commun sont en gras
+                    b.innerHTML = "<strong>" + list[i].substr(0, val.length) + "</strong>";
+                    b.innerHTML += list[i].substr(val.length);
+                    
+                    b.innerHTML += "<input type='hidden' value='" + list[i] + "'>";
+                    
+                    b.addEventListener("click", function (e) {
+                        // insère la valeur à autocompléter
+                        inp.value = this.getElementsByTagName("input")[0].value;
+                        
+                        // ferme la liste
+                        closeAllLists();
+                    });
+                    a.appendChild(b);
+                }
+            }
+        });
+        
+        // quand l'utilisateur appuie sur une touche du clavier
+        inp.addEventListener("keydown", function (e) {
+            var x = document.getElementById(this.id + "autocomplete-list");
+            
+            if (x) 
+                x = x.getElementsByTagName("div");
+            
+            if (e.keyCode == 40) { // si c'est la flèche du bas
+                currentFocus++;
+                addActive(x);
+            }
+            
+            else if (e.keyCode == 38) { // si c'est la flèche du haut
+                currentFocus--;
+                addActive(x);
+            }
+            
+            else if (e.keyCode == 13) { // si c'est la touche entrée
+                e.preventDefault();
+                if (currentFocus > -1) {
+                    if (x) // soumet le formulaire
+                        x[currentFocus].click();
+                }
+            }
+        });
+
+        function addActive(x) {
+            if (!x) 
+                return false;
+
+            removeActive(x);
+            if (currentFocus >= x.length)
+                currentFocus = 0;
+
+            if (currentFocus < 0)
+                currentFocus = (x.length - 1);
+
+            x[currentFocus].classList.add("autocomplete-active");
+        }
+
+        function removeActive(x) {
+            for (var i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+            }
+        }
+
+        function closeAllLists(elmnt) {
+            var x = document.getElementsByClassName("autocomplete-items");
+            for (var i = 0; i < x.length; i++) {
+                if (elmnt != x[i] && elmnt != inp) {
+                    x[i].parentNode.removeChild(x[i]);
+                }
+            }
+        }
+
+        document.addEventListener("click", function (e) {
+            closeAllLists(e.target);
+        });
+    }
+    var liste_ingredients = JSON.parse('{{ ingredients }}');
+    liste_ingredients = liste_ingredients.map(i => i.nom)
+    
+    autocomplete(document.getElementById("ingredientNameGroup"), liste_ingredients);
+    </script>
 {% endblock %}
