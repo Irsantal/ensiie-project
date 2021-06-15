@@ -47,12 +47,7 @@ module.exports.postIngredientHandler = (req, res) => {
         var resultStock = err ? err.stack : respStock.rows;
 
         if(resultStock.length === 0){ // si l'ingrédient n'existe pas encore dans le frigo
-          var sqlReq = "INSERT INTO Stocker(identifiant_utilisateur, id_ingredient, quantite, date_stock) VALUES($1, (SELECT id FROM Ingredient WHERE nom = $2), $3, (SELECT DATE(NOW())))";
-          var values = [req.session.user, ingredient, quantity];
-
-          client.query(sqlReq, values, (err, resp) => {
-            const result = err ? err.stack : resp.rows[0];
-          });
+          add_stock(req.session.user, ingredient, quantity);
         }
 
         else{ // si l'ingrédient existe déjà dans le frigo
@@ -76,16 +71,20 @@ module.exports.postIngredientHandler = (req, res) => {
         client.query(sqlReq, value, (err, resp) => {
           const result = err ? err.stack : resp.rows[0];
           // ajout dans la table Stocker
-          var sqlReq = "INSERT INTO Stocker(identifiant_utilisateur, id_ingredient, quantite, date_stock) VALUES($1, (SELECT id FROM Ingredient WHERE nom = $2), $3, (SELECT DATE(NOW())))";
-          var values = [req.session.user, ingredient, quantity];
-
-          client.query(sqlReq, values, (err, resp) => {
-            const result = err ? err.stack : resp.rows[0];
-          });
+          add_stock(req.session.user, ingredient, quantity);
         });
       }
 
       res.redirect('/ingredient');
     });
   }
+}
+
+function add_stock(user, ingredient, quantity){
+  var sqlReq = "INSERT INTO Stocker(identifiant_utilisateur, id_ingredient, quantite, date_stock) VALUES($1, (SELECT id FROM Ingredient WHERE nom = $2), $3, (SELECT DATE(NOW())))";
+  var values = [user, ingredient, quantity];
+
+  client.query(sqlReq, values, (err, resp) => {
+    const result = err ? err.stack : resp.rows[0];
+  });
 }
