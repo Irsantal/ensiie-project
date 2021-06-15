@@ -80,6 +80,12 @@ module.exports.postIngredientHandler = (req, res) => {
   }
 }
 
+/*
+* La fonction permet d'ajouter un ingrédient au frigo de l'utilisateur.
+* @param l'identifiant de l'utilisateur
+* @param le nom de l'ingrédient
+* @param la quantité que l'utilisateur a
+*/
 function add_stock(user, ingredient, quantity){
   var sqlReq = "INSERT INTO Stocker(identifiant_utilisateur, id_ingredient, quantite, date_stock) VALUES($1, (SELECT id FROM Ingredient WHERE nom = $2), $3, (SELECT DATE(NOW())))";
   var values = [user, ingredient, quantity];
