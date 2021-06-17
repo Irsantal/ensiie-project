@@ -13,15 +13,25 @@
     <div class="ingredientsview">
         <h3>Liste des ingredients présents dans votre frigo</h3>
         <table class="table">
-            <tr>
-                <th>Nom</th>  <th>Quantité</th>
-            </tr>
+          <thead class="thead-dark">
+              <tr>
+                  <th>Nom</th>  <th>Quantité</th> <th></th>
+              </tr>
+          </thead>
+          <tbody>
             {% for d in data %}
             <tr>
                 <td>{{d.nom}}</td>
                 <td>{{d.quantite}} {% if d.unite != 'u    ' %} {{d.unite}} {% endif %}</td>
+                <td>
+                  <form action="/ingredient/delete" method="post" class="deleteuseringredientform">
+                    <input type="hidden" name="id" value="{{d.id}}">
+                    <button type="sumbit" name="delete" class="btn btn-primary">Delete </button>
+                  </form>
+                </td>
             </tr>
             {% endfor %}
+          </tbody>
         </table>
     </div>
 

@@ -30,9 +30,10 @@ const {registerHandler,postRegisterHandler} = require('./routes/register');
 app.get('/register', registerHandler);
 app.post('/register', postRegisterHandler);
 
-const {ingredientHandler,postIngredientHandler} = require('./routes/ingredient');
+const {ingredientHandler,postIngredientHandler,deleteIngredientHandler} = require('./routes/ingredient');
 app.get('/ingredient', ingredientHandler);
 app.post('/ingredient', postIngredientHandler);
+app.post('/ingredient/delete', deleteIngredientHandler);
 
 const {recipeHandler} =  require('./routes/recipe');
 app.get('/recettes', recipeHandler);

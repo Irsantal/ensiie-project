@@ -6,14 +6,14 @@ module.exports.ingredientHandler = (req, res) => {
     res.redirect("/login")
   else {
     var userId = req.session.user;
-    var sqlReq = "SELECT DISTINCT Ingredient.nom, Ingredient.unite, Stocker.quantite FROM Ingredient, Stocker WHERE Ingredient.id IN (SELECT id_ingredient FROM Stocker WHERE identifiant_utilisateur=$1) AND Stocker.quantite = (SELECT DISTINCT quantite from Stocker where id_ingredient = Ingredient.id AND identifiant_utilisateur=$1);"
+    var sqlReq = "SELECT DISTINCT Ingredient.id, Ingredient.nom, Ingredient.unite, Stocker.quantite FROM Ingredient, Stocker WHERE Ingredient.id IN (SELECT id_ingredient FROM Stocker WHERE identifiant_utilisateur=$1) AND Stocker.quantite = (SELECT DISTINCT quantite from Stocker where id_ingredient = Ingredient.id AND identifiant_utilisateur=$1);"
     var sqlReqUnites = "SELECT DISTINCT unite FROM Ingredient;"
     var sqlIngredients = "SELECT nom FROM Ingredient;"
 
     var sqlIngParam = [req.session.user];
     client.query(sqlReq, sqlIngParam, (err, resp) => {
       client.query(sqlReqUnites, (erru, respu) => {
-        client.query(sqlIngredients, (erri, respi) => {  
+        client.query(sqlIngredients, (erri, respi) => {
           var result = err ? err.stack : resp.rows;
           var resultU = erru ? erru.stack : respu.rows;
           var resultI = erri ? erri.stack : respi.rows;
@@ -75,6 +75,22 @@ module.exports.postIngredientHandler = (req, res) => {
         });
       }
 
+      res.redirect('/ingredient');
+    });
+  }
+}
+
+module.exports.deleteIngredientHandler = (req, res) => {
+  if(!req.session.user || !req.session.password)
+    res.redirect("/login")
+
+  else {
+    var sqlReq = "DELETE FROM Stocker WHERE identifiant_utilisateur = $1 AND id_ingredient = $2";
+    var values = [req.session.user, req.body.id];
+
+    client.query(sqlReq, values, (err, resp) => {
+      const result = err ? err.stack : resp.rows[0];
+      console.log(result);
       res.redirect('/ingredient');
     });
   }
