@@ -37,6 +37,9 @@ app.post('/ingredient', postIngredientHandler);
 const {recipeHandler} =  require('./routes/recipe');
 app.get('/recettes', recipeHandler);
 
+const {adminPageHandler} = require('./routes/admin');
+app.get('/admin', adminPageHandler);
+
 // Handle 404 - Keep this as a last route
 app.use(function(req, res, next) {
   res.status(404);

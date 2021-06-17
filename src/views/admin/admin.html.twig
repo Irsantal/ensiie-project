@@ -15,7 +15,7 @@
 
     <div class="user-role-manager">
         <h1>Rôles</h1>
-        <form class="modification-roles" action="admin_role.html.twig" method="post">
+        <form class="modification-roles" action="/admin" method="post">
             <label for="utilisateur-id">Nom d'utilisateur</label>
             <select class="utilisateur-id">
                 {% for u in utilisateurs %}
@@ -33,7 +33,7 @@
     </div>
     <div class="user-ban-manager">
         <h1>Bannissement</h1>
-        <form class="ban" action="admin_ban.html.twig" method="post">
+        <form class="ban" action="/admin" method="post">
             <label for="utilisateur-id">Nom d'utilisateur</label>
             <select class="utilisateur-id">
                 {% for u in utilisateurs %}
