@@ -18,7 +18,7 @@ module.exports.ingredientHandler = (req, res) => {
           var resultU = erru ? erru.stack : respu.rows;
           var resultI = erri ? erri.stack : respi.rows;
 
-          res.render('ingredient/ingredient_index.html.twig', {login:req.session.user, data:result, unites:resultU, ingredients:JSON.stringify(resultI)});
+          res.render('ingredient/ingredient_index.html.twig', {login:req.session.user, data:result, unites:resultU, ingredients:JSON.stringify(resultI),isAdmin: (req.session.role ==2)});
         });
       });
     });
@@ -52,7 +52,7 @@ module.exports.postIngredientHandler = (req, res) => {
 
         else{ // si l'ingrédient existe déjà dans le frigo
           var sqlReq = "UPDATE Stocker SET quantite = (SELECT quantite FROM Stocker WHERE identifiant_utilisateur = $1 AND id_ingredient = (SELECT id FROM Ingredient WHERE nom = $3)) + $2 WHERE identifiant_utilisateur = $1 AND id_ingredient = (SELECT id FROM Ingredient WHERE nom = $3)";
-          
+
           var values = [req.session.user, quantity, ingredient];
 
           client.query(sqlReq, values, (err, resp) => {

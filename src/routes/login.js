@@ -22,6 +22,7 @@ module.exports.postLoginHandler = (req, res) => {
       else{
         req.session.user = result[0].identifiant;
         req.session.password = result[0].mdp;
+        req.session.role = result[0].statut;
         res.redirect("/");
       }
     });

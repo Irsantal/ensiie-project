@@ -31,3 +31,4 @@ To make this projet work:
 * Create another `.env` file in `src` directory, with user, password and db port (usually 5431)
 * At root project, `make install` and `make start` will set up database
 * finally, return to src, `npm install` will install all dependencies, and `node app.js` set up the project.
+* Note : admin user Jaime with password test is available.

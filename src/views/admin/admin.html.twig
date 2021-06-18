@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+{% block title %}Admin | Home{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    <div class="user-view">
+        <h1>Liste des utilisateurs</h1>
+        <ul class="list-group">
+        {% for u in utilisateurs %}
+            <li class="list-group-item">{{ u.identifiant }} : <span id="{{u.identifiant}}-role"></span></li>
+
+        <script type="text/javascript">
+          var roleId = {{u.statut}};
+          var role = ""
+          switch (roleId) {
+            case 0:
+              role="Utilisateur";
+              break;
+            case 1:
+                role="Modérateur";
+            break;
+            case 2:
+              role="Administrateur";
+            break;
+            default:
+              role="?";
+            break;
+          }
+          document.getElementById("{{u.identifiant}}-role").innerHTML = role;
+        </script>
+        {% endfor %}
+        </ul>
+    </div>
+
+    <div class="user-role-manager">
+        <h1>Rôles</h1>
+        <form class="modification-roles" action="/admin/rights" method="post">
+            <label for="utilisateurid">Nom d'utilisateur</label>
+            <select id="utilisateurid" name="utilisateurid" class="utilisateurid">
+                {% for u in utilisateurs %}
+                  {% if u.identifiant != login %}
+                      <option value="{{ u.identifiant }}">{{ u.identifiant }}</option>
+                  {% endif %}
+                {% endfor %}
+            </select>
+            <label for="role">Rôles</label>
+            <select id="role" class="role" name="role">
+                <option value="0">Utilisateur</option>
+                <option value="1">Modérateur</option>
+                <option value="2">Administrateur</option>
+            </select>
+            <input type="submit">
+        </form>
+    </div>
+    <div class="user-ban-manager">
+        <h1>Bannissement</h1>
+        <form class="ban" action="/admin/ban" method="post">
+            <label for="utilisateurid">Nom d'utilisateur</label>
+            <select id="utilisateurid" name="utilisateurid" class="utilisateurid">
+                {% for u in utilisateurs %}
+                    {% if u.identifiant != login %}
+                      <option value="{{ u.identifiant }}">{{ u.identifiant }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <label>Bouton de ban</label>
+            <input class="ban" type="submit" value="BANNIR">
+        </form>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
