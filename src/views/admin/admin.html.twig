@@ -34,8 +34,8 @@
     <div class="user-ban-manager">
         <h1>Bannissement</h1>
         <form class="ban" action="/admin" method="post">
-            <label for="utilisateur-id">Nom d'utilisateur</label>
-            <select id="utilisateur-id" name="utilisateur-id" class="utilisateur-id">
+            <label for="utilisateurid">Nom d'utilisateur</label>
+            <select id="utilisateurid" name="utilisateurid" class="utilisateurid">
                 {% for u in utilisateurs %}
                     <option value="{{ u.identifiant }}">{{ u.identifiant }}</option>
                 {% endfor %}

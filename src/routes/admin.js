@@ -23,13 +23,26 @@ module.exports.adminPageHandler = (req, res) => {
     }
 };
 
-module.exports.changeRights = (res, req) => {
+module.exports.changeRights = (req, res) => {
     if(!req.session.user || !req.session.password)
         res.redirect("/login");
     else {
         let newRights = 'UPDATE utilisateur SET statut=$1 WHERE identifiant=$2';
         let values = [req.body.role, req.body.utilisateurid];
         client.query (newRights, values, (err, resp) => {
+            let result = err ? err.stack : resp.rows;
+            res.redirect('/admin');
+        });
+    }
+};
+
+module.exports.ban = (req, res) => {
+    if(!req.session.user || !req.session.password)
+        res.redirect("/login");
+    else {
+        let banReq = 'DELETE FROM utilisateur WHERE identifiant=$1';
+        let values = [req.body.utilisateurid];
+        client.query (banReq, values, (err, resp) => {
             let result = err ? err.stack : resp.rows;
             res.redirect('/admin');
         });
