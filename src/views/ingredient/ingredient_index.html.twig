@@ -6,6 +6,7 @@
     {{ parent() }}
     
     <link rel = "stylesheet" type = "text/css" href = "css/ingredient.css">
+    <script type="text/javascript" src="js/moment.js"></script>
 {% endblock %}
 
 
@@ -15,7 +16,7 @@
         <table class="table">
           <thead class="thead-dark">
               <tr>
-                  <th>Nom</th>  <th>Quantité</th> <th></th>
+                  <th>Nom</th>  <th>Quantité</th> <th>Date de péremption</th> <th></th>
               </tr>
           </thead>
           <tbody>
@@ -23,6 +24,7 @@
             <tr>
                 <td>{{d.nom}}</td>
                 <td>{{d.quantite}} {% if d.unite != 'u    ' %} {{d.unite}} {% endif %}</td>
+                <td id="{{d.id}}-date"></td>
                 <td>
                   <form action="/ingredient/delete" method="post" class="deleteuseringredientform">
                     <input type="hidden" name="id" value="{{d.id}}">
@@ -30,6 +32,11 @@
                   </form>
                 </td>
             </tr>
+
+            <script type="text/javascript">
+                  var date = moment("{{d.date_stock}}").format("DD MMM yyy");
+                  document.getElementById("{{d.id}}-date").innerHTML = date;
+            </script>
             {% endfor %}
           </tbody>
         </table>
@@ -42,13 +49,16 @@
         <form autocomplete="off" action="/ingredient" method="post" class="addingredientform">
             <div class="autocomplete">
                 <label for="name">Nom de l'ingrédient</label>
-                
+
                 <div id = "ingredientNameGroup">
                     <input type = "text" name = "name" id = "ingredientNameInput" data-id = {{ingredients}}>
                 </div>
 
                 <label for="name">Quantité</label>
                 <input type="number" name="quantity" min="0">
+                <label for="date">Date de péremption</label>
+                <input type="date" name="date">
+
                 <select class="unite" name="unite">
                     {% for u in unites %}
                         <option value="{{u.unite}}">{{u.unite}}</li>
@@ -62,8 +72,7 @@
 
 {% block javascripts %}
     {{ parent() }}
-    
-    <script>    
+    <script>
     /*
     * La fonction permet d'autocompléter en fonction de ce que l'utilisateur écrit dans un champ.
     * @param le champ à autocompléter
@@ -74,26 +83,26 @@
         const inp = group.childNodes[1];
 
         var currentFocus;
-        
+
         // quand l'utilisateur écrit dans la zone de saisie
         inp.addEventListener("input", function (e) {
             var a, b, i, val = this.value;
-            
+
             closeAllLists();
-            
+
             if (!val) { // si l'utilisateur n'a rien écrit
-                return false; 
+                return false;
             }
 
             currentFocus = -1;
-            
+
             // div qui contient le nom de chaque élément
             a = document.createElement("DIV");
             a.setAttribute("id", this.id + "autocomplete-list");
             a.setAttribute("class", "autocomplete-items");
-            
+
             group.appendChild(a);
-            
+
             for (i = 0 ; i < list.length ; i++) {
                 if (list[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) { // si la valeur saisie correspond à un élément de la liste
                     // div pour les éléments correspondants
@@ -102,13 +111,13 @@
                     // les lettres en commun sont en gras
                     b.innerHTML = "<strong>" + list[i].substr(0, val.length) + "</strong>";
                     b.innerHTML += list[i].substr(val.length);
-                    
+
                     b.innerHTML += "<input type='hidden' value='" + list[i] + "'>";
-                    
+
                     b.addEventListener("click", function (e) {
                         // insère la valeur à autocompléter
                         inp.value = this.getElementsByTagName("input")[0].value;
-                        
+
                         // ferme la liste
                         closeAllLists();
                     });
@@ -116,24 +125,24 @@
                 }
             }
         });
-        
+
         // quand l'utilisateur appuie sur une touche du clavier
         inp.addEventListener("keydown", function (e) {
             var x = document.getElementById(this.id + "autocomplete-list");
-            
-            if (x) 
+
+            if (x)
                 x = x.getElementsByTagName("div");
-            
+
             if (e.keyCode == 40) { // si c'est la flèche du bas
                 currentFocus++;
                 addActive(x);
             }
-            
+
             else if (e.keyCode == 38) { // si c'est la flèche du haut
                 currentFocus--;
                 addActive(x);
             }
-            
+
             else if (e.keyCode == 13) { // si c'est la touche entrée
                 e.preventDefault();
                 if (currentFocus > -1) {
@@ -144,7 +153,7 @@
         });
 
         function addActive(x) {
-            if (!x) 
+            if (!x)
                 return false;
 
             removeActive(x);
@@ -178,7 +187,7 @@
     }
     var liste_ingredients = JSON.parse('{{ ingredients }}');
     liste_ingredients = liste_ingredients.map(i => i.nom)
-    
+
     autocomplete(document.getElementById("ingredientNameGroup"), liste_ingredients);
     </script>
 {% endblock %}
