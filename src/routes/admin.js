@@ -24,3 +24,16 @@ module.exports.changeRights = (req, res) => {
         });
     }
 };
+
+module.exports.ban = (req, res) => {
+    if(!req.session.user || !req.session.password)
+        res.redirect("/login");
+    else {
+        let banReq = 'DELETE FROM utilisateur WHERE identifiant=$1';
+        let values = [req.body.utilisateurid];
+        client.query (banReq, values, (err, resp) => {
+            let result = err ? err.stack : resp.rows;
+            res.redirect('/admin');
+        });
+    }
+};
