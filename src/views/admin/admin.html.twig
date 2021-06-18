@@ -37,7 +37,7 @@
 
     <div class="user-role-manager">
         <h1>Rôles</h1>
-        <form class="modification-roles" action="/admin" method="post">
+        <form class="modification-roles" action="/admin/rights" method="post">
             <label for="utilisateurid">Nom d'utilisateur</label>
             <select id="utilisateurid" name="utilisateurid" class="utilisateurid">
                 {% for u in utilisateurs %}
@@ -55,7 +55,7 @@
     </div>
     <div class="user-ban-manager">
         <h1>Bannissement</h1>
-        <form class="ban" action="/admin" method="post">
+        <form class="ban" action="/admin/ban" method="post">
             <label for="utilisateurid">Nom d'utilisateur</label>
             <select id="utilisateurid" name="utilisateurid" class="utilisateurid">
                 {% for u in utilisateurs %}

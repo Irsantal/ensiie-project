@@ -40,8 +40,8 @@ app.get('/recettes', recipeHandler);
 
 const {adminPageHandler, changeRights, ban} = require('./routes/admin');
 app.get('/admin', adminPageHandler);
-app.post('/admin', changeRights);
-app.post('/admin', ban);
+app.post('/admin/rights', changeRights);
+app.post('/admin/ban', ban);
 
 // Handle 404 - Keep this as a last route
 app.use(function(req, res, next) {
