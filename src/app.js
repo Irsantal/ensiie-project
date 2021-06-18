@@ -38,6 +38,10 @@ app.post('/ingredient/delete', deleteIngredientHandler);
 const {recipeHandler} =  require('./routes/recipe');
 app.get('/recettes', recipeHandler);
 
+const {adminPageHandler, changeRights} = require('./routes/admin');
+app.get('/admin', adminPageHandler);
+app.post('/admin', changeRights);
+
 // Handle 404 - Keep this as a last route
 app.use(function(req, res, next) {
   res.status(404);

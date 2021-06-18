@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+{% block title %}Admin | Home{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    <div class="user-view">
+        <h1>Liste des utilisateurs</h1>
+        {% for u in utilisateurs %}
+            <li>{{ u.identifiant }}</li>
+        {% endfor %}
+    </div>
+
+    <div class="user-role-manager">
+        <h1>Rôles</h1>
+        <form class="modification-roles" action="/admin" method="post">
+            <label for="utilisateurid">Nom d'utilisateur</label>
+            <select id="utilisateurid" name="utilisateurid" class="utilisateurid">
+                {% for u in utilisateurs %}
+                <option value="{{ u.identifiant }}">{{ u.identifiant }}</option>
+                {% endfor %}
+            </select>
+            <label for="role">Rôles</label>
+            <select id="role" class="role" name="role">
+                <option value="0">Utilisateur</option>
+                <option value="1">Modérateur</option>
+                <option value="2">Administrateur</option>
+            </select>
+            <input type="submit">
+        </form>
+    </div>
+    <div class="user-ban-manager">
+        <h1>Bannissement</h1>
+        <form class="ban" action="/admin" method="post">
+            <label for="utilisateur-id">Nom d'utilisateur</label>
+            <select id="utilisateur-id" name="utilisateur-id" class="utilisateur-id">
+                {% for u in utilisateurs %}
+                    <option value="{{ u.identifiant }}">{{ u.identifiant }}</option>
+                {% endfor %}
+            </select>
+            <label>Bouton de ban</label>
+            <input class="ban" type="submit" value="BANNIR">
+        </form>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
