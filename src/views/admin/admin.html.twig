@@ -41,7 +41,9 @@
             <label for="utilisateurid">Nom d'utilisateur</label>
             <select id="utilisateurid" name="utilisateurid" class="utilisateurid">
                 {% for u in utilisateurs %}
-                <option value="{{ u.identifiant }}">{{ u.identifiant }}</option>
+                  {% if u.identifiant != login %}
+                      <option value="{{ u.identifiant }}">{{ u.identifiant }}</option>
+                  {% endif %}
                 {% endfor %}
             </select>
             <label for="role">Rôles</label>
@@ -59,7 +61,9 @@
             <label for="utilisateurid">Nom d'utilisateur</label>
             <select id="utilisateurid" name="utilisateurid" class="utilisateurid">
                 {% for u in utilisateurs %}
-                    <option value="{{ u.identifiant }}">{{ u.identifiant }}</option>
+                    {% if u.identifiant != login %}
+                      <option value="{{ u.identifiant }}">{{ u.identifiant }}</option>
+                    {% endif %}
                 {% endfor %}
             </select>
             <label>Bouton de ban</label>
