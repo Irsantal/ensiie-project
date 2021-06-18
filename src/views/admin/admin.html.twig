@@ -16,14 +16,14 @@
     <div class="user-role-manager">
         <h1>Rôles</h1>
         <form class="modification-roles" action="/admin" method="post">
-            <label for="utilisateur-id">Nom d'utilisateur</label>
-            <select class="utilisateur-id">
+            <label for="utilisateurid">Nom d'utilisateur</label>
+            <select id="utilisateurid" name="utilisateurid" class="utilisateurid">
                 {% for u in utilisateurs %}
                 <option value="{{ u.identifiant }}">{{ u.identifiant }}</option>
                 {% endfor %}
             </select>
             <label for="role">Rôles</label>
-            <select class="role">
+            <select id="role" class="role" name="role">
                 <option value="0">Utilisateur</option>
                 <option value="1">Modérateur</option>
                 <option value="2">Administrateur</option>
@@ -35,7 +35,7 @@
         <h1>Bannissement</h1>
         <form class="ban" action="/admin" method="post">
             <label for="utilisateur-id">Nom d'utilisateur</label>
-            <select class="utilisateur-id">
+            <select id="utilisateur-id" name="utilisateur-id" class="utilisateur-id">
                 {% for u in utilisateurs %}
                     <option value="{{ u.identifiant }}">{{ u.identifiant }}</option>
                 {% endfor %}

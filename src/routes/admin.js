@@ -9,8 +9,7 @@ module.exports.adminPageHandler = (req, res) => {
         client.query(isAdmin, values, (err, resp) => {
             result = err ? err.stack : resp.rows;
             if (result[0].statut !== 2) {
-                console.log(result);
-                //res.redirect('/');
+                res.redirect('/');
             }
             else {
                 var tousLesUtilisateurs = 'SELECT * FROM utilisateur';
@@ -26,8 +25,13 @@ module.exports.adminPageHandler = (req, res) => {
 
 module.exports.changeRights = (res, req) => {
     if(!req.session.user || !req.session.password)
-        res.redirect("/login")
+        res.redirect("/login");
     else {
-
+        let newRights = 'UPDATE utilisateur SET statut=$1 WHERE identifiant=$2';
+        let values = [req.body.role, req.body.utilisateurid];
+        client.query (newRights, values, (err, resp) => {
+            let result = err ? err.stack : resp.rows;
+            res.redirect('/admin');
+        });
     }
 };
