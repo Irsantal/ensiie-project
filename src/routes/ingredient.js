@@ -6,7 +6,7 @@ module.exports.ingredientHandler = (req, res) => {
     res.redirect("/login")
   else {
     var userId = req.session.user;
-    var sqlReq = "SELECT DISTINCT Ingredient.id, Ingredient.nom, Ingredient.unite, Stocker.quantite, Stocker.date_stock FROM Ingredient, Stocker WHERE Ingredient.id IN (SELECT id_ingredient FROM Stocker WHERE identifiant_utilisateur=$1) AND Stocker.quantite = (SELECT DISTINCT quantite from Stocker where id_ingredient = Ingredient.id AND identifiant_utilisateur=$1);"
+    var sqlReq = "SELECT DISTINCT Ingredient.id, Ingredient.nom, Ingredient.unite, Stocker.quantite, Stocker.date_stock FROM Ingredient, Stocker WHERE Ingredient.id IN (SELECT id_ingredient FROM Stocker WHERE identifiant_utilisateur=$1) AND Stocker.quantite = (SELECT DISTINCT quantite from Stocker where id_ingredient = Ingredient.id AND identifiant_utilisateur=$1) AND Stocker.identifiant_utilisateur=$1 AND Stocker.date_stock = (SELECT date_stock FROM stocker WHERE identifiant_utilisateur=$1 AND id_ingredient=Ingredient.id);"
     var sqlReqUnites = "SELECT DISTINCT unite FROM Ingredient;"
     var sqlIngredients = "SELECT nom FROM Ingredient;"
 
