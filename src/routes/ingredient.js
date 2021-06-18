@@ -100,6 +100,7 @@ module.exports.deleteIngredientHandler = (req, res) => {
 * @param l'identifiant de l'utilisateur
 * @param le nom de l'ingrédient
 * @param la quantité que l'utilisateur a
+* @param la date de péremption de l'ingrédient
 */
 function add_stock(user, ingredient, quantity, date){
   var sqlReq = "INSERT INTO Stocker(identifiant_utilisateur, id_ingredient, quantite, date_stock) VALUES($1, (SELECT id FROM Ingredient WHERE nom = $2), $3, $4)";
