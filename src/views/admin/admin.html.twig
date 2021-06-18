@@ -8,9 +8,31 @@
 {% block body %}
     <div class="user-view">
         <h1>Liste des utilisateurs</h1>
+        <ul class="list-group">
         {% for u in utilisateurs %}
-            <li>{{ u.identifiant }}</li>
+            <li class="list-group-item">{{ u.identifiant }} : <span id="{{u.identifiant}}-role"></span></li>
+
+        <script type="text/javascript">
+          var roleId = {{u.statut}};
+          var role = ""
+          switch (roleId) {
+            case 0:
+              role="Utilisateur";
+              break;
+            case 1:
+                role="Modérateur";
+            break;
+            case 2:
+              role="Administrateur";
+            break;
+            default:
+              role="?";
+            break;
+          }
+          document.getElementById("{{u.identifiant}}-role").innerHTML = role;
+        </script>
         {% endfor %}
+        </ul>
     </div>
 
     <div class="user-role-manager">
